@@ -60,6 +60,17 @@ settings. Run it from the repo root with LuaJIT (or any Lua 5.1):
 luajit test/test_main.lua main.lua
 ```
 
+## Device still locks up while connecting?
+
+This plugin quiets the *popups*, but on Kobo and other devices where
+KOReader drives `wpa_supplicant` itself, the whole connect sequence runs
+synchronously in the UI thread — the device freezes until the connection
+is established, popups or not. For that there's a companion user patch,
+[koreader-nonblocking-wifi](https://github.com/asxelot/koreader-nonblocking-wifi),
+which moves the scan, authentication wait, and DHCP off the UI thread so
+you can keep reading while Wi-Fi connects. (Kindles don't need it — the
+OS already connects in the background there.)
+
 ## License
 
 GPL-3.0 — see [LICENSE](LICENSE).
