@@ -9,7 +9,6 @@ screen instead.
 @module koplugin.WifiIndicator
 --]]--
 
-local Blitbuffer = require("ffi/blitbuffer")
 local Device = require("device")
 local Event = require("ui/event")
 local FrameContainer = require("ui/widget/container/framecontainer")
@@ -86,7 +85,6 @@ end
 showIcon = function(icon_name)
     hideIcon()
     icon_frame = FrameContainer:new{
-        background = Blitbuffer.COLOR_WHITE,
         bordersize = 0,
         padding = Size.padding.small,
         toast = true, -- transparent to input, stacked on top
@@ -94,6 +92,7 @@ showIcon = function(icon_name)
             icon = icon_name,
             width = Screen:scaleBySize(ICON_SIZE),
             height = Screen:scaleBySize(ICON_SIZE),
+            alpha = true, -- keep the icon's transparency instead of flattening onto white
         },
     }
     local margin = Screen:scaleBySize(ICON_MARGIN)
