@@ -216,5 +216,16 @@ local sub = menu_items.wifi_indicator.sub_item_table
 check(#sub == 3, "settings: three checkboxes in plugin menu")
 check(sub[3].checked_func() == true, "settings: menu icon default on")
 
+-- ---------------------------------------------- delete plugin settings --
+local deleted = {}
+_G.G_reader_settings.delSetting = function(self, key) table.insert(deleted, key) end
+WifiIndicator.deletePluginSettings(WifiIndicator)
+table.sort(deleted)
+check(#deleted == 3
+    and deleted[1] == "wifiindicator_menu_icon"
+    and deleted[2] == "wifiindicator_show_icon"
+    and deleted[3] == "wifiindicator_suppress_popups",
+    "settings: deletePluginSettings removes all three keys")
+
 print(failures == 0 and "ALL TESTS PASSED" or (failures .. " TEST(S) FAILED"))
 os.exit(failures == 0 and 0 or 1)

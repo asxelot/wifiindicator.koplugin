@@ -229,6 +229,18 @@ function WifiIndicator:addToMainMenu(menu_items)
     }
 end
 
+-- Called by the plugin manager's "Disable/Delete plugin and settings" buttons
+-- (KOReader nightly, koreader/koreader#15240). No-op on older versions.
+function WifiIndicator:deletePluginSettings()
+    for __, key in ipairs({
+        "wifiindicator_suppress_popups",
+        "wifiindicator_show_icon",
+        "wifiindicator_menu_icon",
+    }) do
+        G_reader_settings:delSetting(key)
+    end
+end
+
 -- These events are broadcast by NetworkMgr, and are what actually tells us
 -- the connection state changed (the Kindle Wi-Fi restore on wakeup is
 -- asynchronous, and doesn't necessarily go through any of the popups above).
