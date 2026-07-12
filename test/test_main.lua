@@ -47,7 +47,13 @@ FakeTouchMenu.updateItems = function(menu) end
 
 package.preload["ffi/blitbuffer"] = function() return { COLOR_WHITE = 0 } end
 package.preload["device"] = function()
-    return { screen = { scaleBySize = function(_, n) return n end } }
+    return {
+        screen = { scaleBySize = function(_, n) return n end },
+        -- nbwifi.lua platform gate: neither SDL test mode nor a supported device,
+        -- so the bundled engine stays uninstalled under this harness.
+        isSDL = function() return false end,
+        isKindle = function() return false end,
+    }
 end
 package.preload["ui/widget/container/framecontainer"] = function()
     return { new = function(self, t) return t end }
@@ -221,11 +227,12 @@ local deleted = {}
 _G.G_reader_settings.delSetting = function(self, key) table.insert(deleted, key) end
 WifiIndicator.deletePluginSettings(WifiIndicator)
 table.sort(deleted)
-check(#deleted == 3
+check(#deleted == 4
     and deleted[1] == "wifiindicator_menu_icon"
-    and deleted[2] == "wifiindicator_show_icon"
-    and deleted[3] == "wifiindicator_suppress_popups",
-    "settings: deletePluginSettings removes all three keys")
+    and deleted[2] == "wifiindicator_nonblocking_wifi"
+    and deleted[3] == "wifiindicator_show_icon"
+    and deleted[4] == "wifiindicator_suppress_popups",
+    "settings: deletePluginSettings removes all four keys")
 
 print(failures == 0 and "ALL TESTS PASSED" or (failures .. " TEST(S) FAILED"))
 os.exit(failures == 0 and 0 or 1)

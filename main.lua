@@ -24,6 +24,10 @@ local logger = require("logger")
 local _ = require("gettext")
 local Screen = Device.screen
 
+-- Bundled non-blocking Wi-Fi connect engine (no-op on unsupported platforms, or when
+-- the standalone koreader-nonblocking-wifi user patch is already installed).
+local nbwifi = require("nbwifi")
+
 -- How long the corner icon stays on screen (matches the timeout of the
 -- popups it replaces).
 local ICON_TIMEOUT_S = 3
@@ -194,38 +198,51 @@ function WifiIndicator:init()
 end
 
 function WifiIndicator:addToMainMenu(menu_items)
+    local sub_item_table = {
+        {
+            text = _("Replace Wi-Fi popups with a corner icon"),
+            checked_func = function()
+                return G_reader_settings:nilOrTrue("wifiindicator_suppress_popups")
+            end,
+            callback = function()
+                G_reader_settings:flipNilOrTrue("wifiindicator_suppress_popups")
+            end,
+        },
+        {
+            text = _("Show icon on connect and disconnect"),
+            checked_func = function()
+                return G_reader_settings:nilOrTrue("wifiindicator_show_icon")
+            end,
+            callback = function()
+                G_reader_settings:flipNilOrTrue("wifiindicator_show_icon")
+            end,
+        },
+        {
+            text = _("Show Wi-Fi status in menu bar"),
+            checked_func = function()
+                return G_reader_settings:nilOrTrue("wifiindicator_menu_icon")
+            end,
+            callback = function()
+                G_reader_settings:flipNilOrTrue("wifiindicator_menu_icon")
+            end,
+        },
+    }
+    if nbwifi.installed then
+        table.insert(sub_item_table, {
+            text = _("Non-blocking Wi-Fi connect"),
+            help_text = _("Connect to Wi-Fi in the background instead of freezing the interface. Takes effect on the next connection attempt."),
+            checked_func = function()
+                return G_reader_settings:nilOrTrue("wifiindicator_nonblocking_wifi")
+            end,
+            callback = function()
+                G_reader_settings:flipNilOrTrue("wifiindicator_nonblocking_wifi")
+            end,
+        })
+    end
     menu_items.wifi_indicator = {
         text = _("Wi-Fi status icon"),
         sorting_hint = "network",
-        sub_item_table = {
-            {
-                text = _("Replace Wi-Fi popups with a corner icon"),
-                checked_func = function()
-                    return G_reader_settings:nilOrTrue("wifiindicator_suppress_popups")
-                end,
-                callback = function()
-                    G_reader_settings:flipNilOrTrue("wifiindicator_suppress_popups")
-                end,
-            },
-            {
-                text = _("Show icon on connect and disconnect"),
-                checked_func = function()
-                    return G_reader_settings:nilOrTrue("wifiindicator_show_icon")
-                end,
-                callback = function()
-                    G_reader_settings:flipNilOrTrue("wifiindicator_show_icon")
-                end,
-            },
-            {
-                text = _("Show Wi-Fi status in menu bar"),
-                checked_func = function()
-                    return G_reader_settings:nilOrTrue("wifiindicator_menu_icon")
-                end,
-                callback = function()
-                    G_reader_settings:flipNilOrTrue("wifiindicator_menu_icon")
-                end,
-            },
-        },
+        sub_item_table = sub_item_table,
     }
 end
 
@@ -236,6 +253,7 @@ function WifiIndicator:deletePluginSettings()
         "wifiindicator_suppress_popups",
         "wifiindicator_show_icon",
         "wifiindicator_menu_icon",
+        "wifiindicator_nonblocking_wifi",
     }) do
         G_reader_settings:delSetting(key)
     end

@@ -22,14 +22,21 @@ especially noisy on devices that restore Wi-Fi after every wake from sleep
   left of the clock and battery: full waves = connected, half = Wi-Fi on but
   not connected, empty = off. **Tap it to toggle Wi-Fi** (broadcasts the same
   `ToggleWifi` event as the gesture action).
+- **Non-blocking Wi-Fi connect** (Kobo & other wpa_supplicant devices, and
+  Kindle). Stock KOReader connects synchronously in the UI thread, freezing
+  the device for the duration (hardware bring-up, scan, association, DHCP on
+  Kobo; the scan wait on Kindle). The bundled engine moves the blocking steps
+  into subprocesses and 250 ms polls, so you can keep reading while Wi-Fi
+  connects. No-op on other platforms.
 
-All three behaviors can be switched off individually under
+All behaviors can be switched off individually under
 **Menu → Network → Wi-Fi status icon**.
 
 ## Install
 
 Copy the `wifiindicator.koplugin` folder into `koreader/plugins/` on your
-device (only `main.lua` and `_meta.lua` are needed) and restart KOReader.
+device (only `main.lua`, `nbwifi.lua` and `_meta.lua` are needed) and restart
+KOReader.
 
 ## How it works
 
@@ -60,16 +67,14 @@ settings. Run it from the repo root with LuaJIT (or any Lua 5.1):
 luajit test/test_main.lua main.lua
 ```
 
-## Device still locks up while connecting?
+## Relation to koreader-nonblocking-wifi
 
-This plugin quiets the *popups*, but on Kobo and other devices where
-KOReader drives `wpa_supplicant` itself, the whole connect sequence runs
-synchronously in the UI thread — the device freezes until the connection
-is established, popups or not. For that there's a companion user patch,
-[koreader-nonblocking-wifi](https://github.com/asxelot/koreader-nonblocking-wifi),
-which moves the scan, authentication wait, and DHCP off the UI thread so
-you can keep reading while Wi-Fi connects. (Kindles don't need it — the
-OS already connects in the background there.)
+The non-blocking connect engine is the bundled version of the
+[koreader-nonblocking-wifi](https://github.com/asxelot/koreader-nonblocking-wifi)
+user patch. If you have both installed, the user patch takes precedence and
+the plugin's copy backs off automatically (they coordinate through
+`NetworkMgr._nbwifi_installed`), so nothing breaks — but you only need one.
+Field-tested on Kobo Libra Colour (MTK) and a lipc Kindle.
 
 ## License
 
