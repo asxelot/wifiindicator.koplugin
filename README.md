@@ -34,9 +34,21 @@ All behaviors can be switched off individually under
 
 ## Install
 
-Copy the `wifiindicator.koplugin` folder into `koreader/plugins/` on your
-device (only `main.lua`, `nbwifi.lua` and `_meta.lua` are needed) and restart
-KOReader.
+1. Download **`wifiindicator.koplugin.zip`** from the
+   [latest release](https://github.com/asxelot/wifiindicator.koplugin/releases/latest)
+   and unzip it. It expands to a correctly-named `wifiindicator.koplugin/`
+   folder — no renaming needed.
+2. Copy that folder into `koreader/plugins/` on your device.
+3. Restart KOReader.
+
+<details>
+<summary>Install from source instead</summary>
+
+`git clone` this repo (or **Code → Download ZIP** and unzip, then strip the
+`-main` suffix so the folder ends in `.koplugin`). Only `main.lua`,
+`nbwifi.lua` and `_meta.lua` are needed at runtime; copy the folder into
+`koreader/plugins/`.
+</details>
 
 ## How it works
 
