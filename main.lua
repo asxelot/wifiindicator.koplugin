@@ -62,6 +62,7 @@ local INTERCEPTED_MESSAGES = {
     { msg = _("Scanning for Wi-Fi networks timed out"), icon = ICON_DISCONNECTED }, -- Kindle getNetworkList
     { msg = _("Connecting to Wi-Fi…"), icon = ICON_CONNECTING },
     { msg = _("Waiting for network connectivity…"), icon = ICON_CONNECTING },
+    { msg = _("Authenticating…"), icon = ICON_CONNECTING },
     { msg = _("Turning on Wi-Fi…"), icon = ICON_CONNECTING },
     { msg = _("Turning off Wi-Fi…") },
     { msg = _("Wi-Fi off."), icon = ICON_DISCONNECTED },
